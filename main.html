@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+
+    /* ── RESET & BASE ── */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #000010;
+      background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(white 1px, transparent 1px);
+      background-size: 120px 120px, 200px 200px;
+      background-position: 0 0, 60px 60px;
+      color: #ffffff;
+      font-family: 'Exo 2', sans-serif;
+      min-height: 100vh;
+      padding-bottom: 80px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      text-align: center;
+      padding: 50px 20px 10px;
+    }
+
+    .header-tag {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.55rem;
+      letter-spacing: 0.4em;
+      color: rgba(255, 255, 255, 0.25);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .header h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: 4rem;
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      color: #ffffff;
+      text-shadow: 0 0 40px rgba(150, 200, 255, 0.3);
+    }
+
+    .header-sub {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.4em;
+      color: rgba(255, 255, 255, 0.2);
+      text-transform: uppercase;
+      margin-top: 10px;
+    }
+
+    /* ── DIVIDER LINE ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 8vw;
+      margin: 24px 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background-color: rgba(255, 255, 255, 0.07);
+    }
+
+    .divider-text {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.3em;
+      color: rgba(255, 255, 255, 0.15);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* ── SUN SECTION ── */
+    .sun-section {
+      text-align: center;
+      padding: 30px 20px 40px;
+    }
+
+    .sun-link {
+      text-decoration: none;
+      color: inherit;
+      display: inline-block;
+    }
+
+    .sun-orb {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 32%, #fff7a0, #ffd020 28%, #ff8000 62%, #bb2800 100%);
+      box-shadow:
+        0 0 40px rgba(255, 180, 0, 0.7),
+        0 0 80px rgba(255, 120, 0, 0.4),
+        0 0 150px rgba(255, 70, 0, 0.18);
+      margin: 0 auto;
+      animation: float 6s ease-in-out infinite;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .sun-link:hover .sun-orb {
+      transform: scale(1.1);
+      box-shadow:
+        0 0 60px rgba(255, 210, 0, 0.9),
+        0 0 130px rgba(255, 120, 0, 0.55),
+        0 0 220px rgba(255, 70, 0, 0.25);
+    }
+
+    .sun-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      color: #ffd060;
+      text-shadow: 0 0 20px rgba(255, 180, 0, 0.5);
+      margin-top: 20px;
+    }
+
+    .sun-desc {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      color: rgba(255, 255, 255, 0.25);
+      text-transform: uppercase;
+      font-family: 'Orbitron', monospace;
+      margin-top: 6px;
+    }
+
+    /* ── PLANET GRID ── */
+    .planet-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      padding: 0 5vw;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── PLANET CARD ── */
+    .planet-card {
+      display: flex;
+      align-items: center;
+      min-height: 110px;
+      border-radius: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background-color: rgba(255, 255, 255, 0.025);
+      text-decoration: none;
+      color: #ffffff;
+      padding-right: 28px;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .planet-card:hover {
+      transform: translateY(-5px) scale(1.012);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* ── LEFT GLOW BAR ── */
+    .planet-card .glow-bar {
+      position: absolute;
+      left: 0;
+      top: 12%;
+      bottom: 12%;
+      width: 3px;
+      border-radius: 0 3px 3px 0;
+      transition: top 0.3s, bottom 0.3s;
+    }
+
+    .planet-card:hover .glow-bar {
+      top: 0;
+      bottom: 0;
+    }
+
+    /* ── PLANET ORB AREA ── */
+    .orb-area {
+      width: 116px;
+      height: 110px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .planet-orb {
+      border-radius: 50%;
+      box-shadow: 4px 6px 22px rgba(0, 0, 0, 0.65);
+      animation: float 6s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+      transition: box-shadow 0.3s;
+    }
+
+    .planet-card:hover .planet-orb {
+      box-shadow: 4px 6px 28px rgba(0, 0, 0, 0.7);
+    }
+
+    /* Saturn ring */
+    .saturn-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 7px solid rgba(228, 209, 145, 0.38);
+      width: 158px;
+      height: 158px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotateX(68deg);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Earth moon */
+    .earth-moon {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #dddddd, #aaaaaa 55%, #666666 100%);
+      top: 18%;
+      right: 10%;
+      z-index: 3;
+      box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.6);
+      animation: float 5s ease-in-out infinite reverse;
+    }
+
+    /* ── PLANET TEXT ── */
+    .planet-text {
+      flex: 1;
+      padding-left: 8px;
+    }
+
+    .planet-number {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.48rem;
+      letter-spacing: 0.3em;
+      color: rgba(255, 255, 255, 0.18);
+      margin-bottom: 4px;
+    }
+
+    .planet-name {
+      font-family: 'Orbitron', monospace;
+      font-weight: 700;
+      font-size: 1.3rem;
+      letter-spacing: 0.12em;
+      color: #ffffff;
+      margin-bottom: 4px;
+      transition: color 0.25s;
+    }
+
+    .planet-type {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.17em;
+      color: rgba(255, 255, 255, 0.22);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .planet-stats {
+      display: flex;
+      gap: 18px;
+    }
+
+    .stat-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem;
+      line-height: 1;
+      margin-bottom: 3px;
+    }
+
+    .stat-lbl {
+      font-size: 0.52rem;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.18);
+      text-transform: uppercase;
+    }
+
+    /* ── ARROW ── */
+    .arrow {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+      margin-left: 14px;
+      transition: all 0.28s;
+    }
+
+    .planet-card:hover .arrow {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateX(3px);
+    }
+
+    /* ── FOOTER STATS ── */
+    .footer-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      padding: 52px 5vw 0;
+    }
+
+    .footer-item {
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 15px 22px;
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .footer-val {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 4px;
+    }
+
+    .footer-lbl {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.52rem;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.22);
+      text-transform: uppercase;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-10px); }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 700px) {
+      .planet-grid { grid-template-columns: 1fr; }
+      .header { padding-top: 80px; }
+      .header h1 { font-size: 2.5rem; }
+      .planet-stats { display: none; }
+      .orb-area { width: 90px; }
+      .top-nav {
+        top: 15px; 
+        right: 50%;
+        transform: translateX(50%);
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    /* ── TOP NAV ── */
+    .top-nav {
+      position: absolute;
+      top: 25px;
+      right: 30px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      z-index: 100;
+    }
+
+    .top-nav-link {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.6rem;
+      letter-spacing: 0.15em;
+      color: rgba(255, 255, 255, 0.5);
+      text-decoration: none;
+      text-transform: uppercase;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-nav-link:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    
+    .user-btn {
+      color: #4fa3e0;
+      border-color: rgba(79, 163, 224, 0.3);
+      background: rgba(79, 163, 224, 0.05);
+    }
+    
+    .user-btn:hover {
+      border-color: #4fa3e0;
+      background: rgba(79, 163, 224, 0.15);
+      box-shadow: 0 0 15px rgba(79, 163, 224, 0.3);
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── TOP NAV ── -->
+  <nav class="top-nav">
+    <a href="https://www.spacedaily.com/" target="_blank" class="top-nav-link">News</a>
+    <a href="https://apod.nasa.gov/apod/" target="_blank" class="top-nav-link">Gallery</a>
+    <a href="userinfo.html" class="top-nav-link user-btn">User Info</a>
+  </nav>
+
+  <!-- ── HEADER ── -->
+  <div class="header">
+    <p class="header-tag">Milky Way Galaxy · Orion Arm · 26,000 ly from centre</p>
+    <h1>SOLAR SYSTEM</h1>
+    <p class="header-sub">Our Cosmic Neighbourhood</p>
+  </div>
+
+  <!-- ── DIVIDER ── -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text">Click any planet to explore</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ── SUN ── -->
+  <div class="sun-section">
+    <a href="bodies/sun.html" class="sun-link">
+      <div class="sun-orb"></div>
+      <p class="sun-name">THE SUN</p>
+      <p class="sun-desc">G-type Main Sequence Star &nbsp;·&nbsp; 1,392,700 km diameter</p>
+    </a>
+  </div>
+
+  <!-- ── DIVIDER ── -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <span class="divider-text">Eight Planets &nbsp;·&nbsp; 290+ Moons &nbsp;·&nbsp; 4.6 Billion Years</span>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- ── PLANET GRID ── -->
+  <div class="planet-grid">
+
+    <!-- MERCURY -->
+    <a href="bodies/mercury.html" class="planet-card">
+      <div class="glow-bar" style="background:#a8a8b3; box-shadow: 0 0 10px #a8a8b3, 0 0 22px #a8a8b3;"></div>
+      <div class="orb-area">
+        <div class="planet-orb" style="width:42px; height:42px; background: radial-gradient(circle at 34% 30%, #d8d8e3, #a8a8b3 52%, #555560 100%); animation-delay: 0s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 01</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #a8a8b3;">MERCURY</p>
+        <p class="planet-type">Terrestrial Planet</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#a8a8b3;">0.39 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#a8a8b3;">0</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#a8a8b3;">58.6 days</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- VENUS -->
+    <a href="bodies/venus.html" class="planet-card">
+      <div class="glow-bar" style="background:#e8cda0; box-shadow: 0 0 10px #e8cda0, 0 0 22px #e8cda0;"></div>
+      <div class="orb-area">
+        <div class="planet-orb" style="width:62px; height:62px; background: radial-gradient(circle at 34% 30%, #fff0c0, #e8cda0 52%, #8a7040 100%); animation-delay: 0.3s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 02</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #e8cda0;">VENUS</p>
+        <p class="planet-type">Terrestrial Planet</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#e8cda0;">0.72 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#e8cda0;">0</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#e8cda0;">243 days</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- EARTH -->
+    <a href="bodies/earth.html" class="planet-card">
+      <div class="glow-bar" style="background:#4fa3e0; box-shadow: 0 0 10px #4fa3e0, 0 0 22px #4fa3e0;"></div>
+      <div class="orb-area">
+        <div class="earth-moon"></div>
+        <div class="planet-orb" style="width:64px; height:64px; background: radial-gradient(circle at 34% 30%, #a0d8ff, #4fa3e0 52%, #0a4070 100%); animation-delay: 0.6s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 03</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #4fa3e0;">EARTH</p>
+        <p class="planet-type">Terrestrial Planet</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#4fa3e0;">1.00 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#4fa3e0;">1</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#4fa3e0;">24 hours</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- MARS -->
+    <a href="bodies/mars.html" class="planet-card">
+      <div class="glow-bar" style="background:#c1440e; box-shadow: 0 0 10px #c1440e, 0 0 22px #c1440e;"></div>
+      <div class="orb-area">
+        <div class="planet-orb" style="width:50px; height:50px; background: radial-gradient(circle at 34% 30%, #ff8060, #c1440e 52%, #5a1000 100%); animation-delay: 0.9s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 04</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #c1440e;">MARS</p>
+        <p class="planet-type">Terrestrial Planet</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#c1440e;">1.52 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#c1440e;">2</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#c1440e;">24.6 hrs</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- JUPITER -->
+    <a href="bodies/jupiter.html" class="planet-card">
+      <div class="glow-bar" style="background:#c88b3a; box-shadow: 0 0 10px #c88b3a, 0 0 22px #c88b3a;"></div>
+      <div class="orb-area">
+        <div class="planet-orb" style="width:82px; height:82px; background: radial-gradient(circle at 34% 30%, #ffd090, #c88b3a 52%, #5a3500 100%); animation-delay: 1.2s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 05</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #c88b3a;">JUPITER</p>
+        <p class="planet-type">Gas Giant</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#c88b3a;">5.20 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#c88b3a;">95</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#c88b3a;">10 hours</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- SATURN -->
+    <a href="bodies/saturn.html" class="planet-card">
+      <div class="glow-bar" style="background:#e4d191; box-shadow: 0 0 10px #e4d191, 0 0 22px #e4d191;"></div>
+      <div class="orb-area">
+        <div class="saturn-ring"></div>
+        <div class="planet-orb" style="width:74px; height:74px; background: radial-gradient(circle at 34% 30%, #fffacc, #e4d191 52%, #7a6820 100%); animation-delay: 1.5s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 06</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #e4d191;">SATURN</p>
+        <p class="planet-type">Gas Giant</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#e4d191;">9.58 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#e4d191;">146</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#e4d191;">10.7 hrs</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- URANUS -->
+    <a href="bodies/uranus.html" class="planet-card">
+      <div class="glow-bar" style="background:#4fd0d0; box-shadow: 0 0 10px #4fd0d0, 0 0 22px #4fd0d0;"></div>
+      <div class="orb-area">
+        <div class="planet-orb" style="width:66px; height:66px; background: radial-gradient(circle at 34% 30%, #a0ffff, #4fd0d0 52%, #0a6060 100%); animation-delay: 1.8s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 07</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #4fd0d0;">URANUS</p>
+        <p class="planet-type">Ice Giant</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#4fd0d0;">19.2 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#4fd0d0;">28</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#4fd0d0;">17.2 hrs</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+    <!-- NEPTUNE -->
+    <a href="bodies/neptune.html" class="planet-card">
+      <div class="glow-bar" style="background:#4166c0; box-shadow: 0 0 10px #4166c0, 0 0 22px #4166c0;"></div>
+      <div class="orb-area">
+        <div class="planet-orb" style="width:64px; height:64px; background: radial-gradient(circle at 34% 30%, #8090ff, #4166c0 52%, #0a1850 100%); animation-delay: 2.1s;"></div>
+      </div>
+      <div class="planet-text">
+        <p class="planet-number">PLANET 08</p>
+        <p class="planet-name" style="text-shadow: 0 0 18px #4166c0;">NEPTUNE</p>
+        <p class="planet-type">Ice Giant</p>
+        <div class="planet-stats">
+          <div><p class="stat-val" style="color:#4166c0;">30.1 AU</p><p class="stat-lbl">Distance</p></div>
+          <div><p class="stat-val" style="color:#4166c0;">16</p><p class="stat-lbl">Moons</p></div>
+          <div><p class="stat-val" style="color:#4166c0;">16.1 hrs</p><p class="stat-lbl">Day</p></div>
+        </div>
+      </div>
+      <div class="arrow">›</div>
+    </a>
+
+  </div>
+  <!-- END PLANET GRID -->
+
+  <!-- ── FOOTER STATS ── -->
+  <div class="footer-stats">
+    <div class="footer-item">
+      <p class="footer-val">4.6B yrs</p>
+      <p class="footer-lbl">Age</p>
+    </div>
+    <div class="footer-item">
+      <p class="footer-val">8</p>
+      <p class="footer-lbl">Planets</p>
+    </div>
+    <div class="footer-item">
+      <p class="footer-val">290+</p>
+      <p class="footer-lbl">Moons</p>
+    </div>
+    <div class="footer-item">
+      <p class="footer-val">150M km</p>
+      <p class="footer-lbl">Earth–Sun</p>
+    </div>
+    <div class="footer-item">
+      <p class="footer-val">99.86%</p>
+      <p class="footer-lbl">Mass in Sun</p>
+    </div>
+    <div class="footer-item">
+      <p class="footer-val">~8 mins</p>
+      <p class="footer-lbl">Light travel</p>
+    </div>
+  </div>
+
+</body>
+</html>

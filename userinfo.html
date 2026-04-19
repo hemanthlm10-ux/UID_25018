@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>User Profile — Solar System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    height: 100vh;
+    overflow: hidden;
+    background: black;
+    font-family: 'Exo 2', sans-serif;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── VIDEO BG ── */
+  #bg-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 10, 0.7);
+    z-index: -1;
+  }
+
+  /* ── STARS CANVAS ── */
+  #stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── LAYOUT ── */
+  .profile-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    width: 100%;
+    padding: 20px;
+  }
+
+  /* ── CARD ── */
+  .profile-card {
+    width: 100%;
+    max-width: 480px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 44px 40px 40px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 30px 80px rgba(0,0,0,0.6),
+      0 0 60px rgba(79, 163, 224, 0.08);
+    animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.4em;
+    color: #4fa3e0;
+    text-transform: uppercase;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 25px;
+    height: 1px;
+    background: rgba(79, 163, 224, 0.5);
+  }
+
+  /* ── PROFILE AVATAR ── */
+  .avatar-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e5acc, #4fa3e0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    box-shadow: 0 0 20px rgba(79, 163, 224, 0.4);
+    border: 2px solid rgba(255,255,255,0.2);
+  }
+
+  .avatar-text .name-display {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .avatar-text .rank-display {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── FORM ── */
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-label {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 13px 18px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.25s;
+  }
+
+  .form-input::placeholder {
+    color: rgba(255,255,255,0.15);
+  }
+
+  .form-input:focus {
+    border-color: rgba(79, 163, 224, 0.5);
+    background: rgba(79, 163, 224, 0.05);
+    box-shadow: 0 0 0 3px rgba(79, 163, 224, 0.08);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    cursor: pointer;
+    opacity: 0.6;
+  }
+  input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+
+  /* ── SUBMIT BUTTON ── */
+  .save-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: rgba(79, 163, 224, 0.1);
+    border: 1px solid rgba(79, 163, 224, 0.4);
+    color: #4fa3e0;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 10px;
+    box-shadow: inset 0 0 0 0 rgba(79, 163, 224, 0.5);
+  }
+
+  .save-btn:hover {
+    background: rgba(79, 163, 224, 0.2);
+    box-shadow: inset 0 0 20px 0 rgba(79, 163, 224, 0.3), 0 0 20px rgba(79, 163, 224, 0.2);
+    transform: translateY(-1px);
+    color: #fff;
+  }
+
+  /* ── SUCCESS MESSAGE ── */
+  .success-msg {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 16px;
+    background: rgba(80, 255, 120, 0.08);
+    border: 1px solid rgba(80, 255, 120, 0.25);
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    color: rgba(120, 255, 150, 0.85);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* ── NAV OVERRIDE ── */
+  .top-nav {
+    position: absolute;
+    top: 25px;
+    right: 30px;
+    z-index: 100;
+  }
+  .back-nav-link {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.5);
+    text-decoration: none;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .back-nav-link:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.1);
+    transform: translateY(-2px);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .profile-card { padding: 36px 24px 32px; }
+    .avatar-row { flex-direction: column; text-align: center; gap: 10px; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- Video Background -->
+<video autoplay muted loop id="bg-video">
+  <source src="background.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<!-- Star canvas -->
+<canvas id="stars"></canvas>
+
+<!-- Top Nav -->
+<nav class="top-nav">
+  <a href="main.html" class="back-nav-link">
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    Return to Map
+  </a>
+</nav>
+
+<div class="profile-wrapper">
+  <!-- Card -->
+  <div class="profile-card">
+    <div class="card-title">// Commander Profile</div>
+
+    <div class="avatar-row">
+      <div class="avatar" id="avatarLetter">U</div>
+      <div class="avatar-text">
+        <div class="name-display" id="displayName">UNKNOWN COMMANDER</div>
+        <div class="rank-display">Mission Specialist</div>
+      </div>
+    </div>
+
+    <form id="profileForm" onsubmit="handleSave(event)">
+
+      <div class="form-group">
+        <label class="form-label" for="fullName">Full Name</label>
+        <input class="form-input" type="text" id="fullName" placeholder="Enter your designation">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="dob">Date of Birth</label>
+        <input class="form-input" type="date" id="dob">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="origin">Planet of Origin</label>
+        <input class="form-input" type="text" id="origin" placeholder="e.g. Earth, Mars Colony">
+      </div>
+
+      <button type="submit" class="save-btn" id="saveBtn">Update Profile</button>
+      
+      <div class="success-msg" id="successMsg">
+        ✓ &nbsp; Profile records updated
+      </div>
+
+    </form>
+  </div>
+</div>
+
+<script>
+/* ── STARS ── */
+const cvs = document.getElementById('stars');
+const ctx = cvs.getContext('2d');
+let W, H, stars = [];
+
+function initStars() {
+  W = cvs.width = innerWidth;
+  H = cvs.height = innerHeight;
+  stars = Array.from({ length: 220 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random(),
+    da: (Math.random() - 0.5) * 0.003,
+    twinkle: Math.random() > 0.55
+  }));
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, W, H);
+  stars.forEach(s => {
+    if (s.twinkle) {
+      s.a = Math.max(0.1, Math.min(1, s.a + s.da));
+      if (s.a <= 0.1 || s.a >= 1) s.da *= -1;
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${s.a * 0.7})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+initStars();
+drawStars();
+window.addEventListener('resize', initStars);
+
+/* ── PROFILE LOGIC (Local Storage) ── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Load saved data
+  const savedName = localStorage.getItem('space_name');
+  const savedDob = localStorage.getItem('space_dob');
+  const savedOrigin = localStorage.getItem('space_origin');
+  
+  if (savedName) {
+    document.getElementById('fullName').value = savedName;
+    updateAvatar(savedName);
+  }
+  if (savedDob) document.getElementById('dob').value = savedDob;
+  if (savedOrigin) document.getElementById('origin').value = savedOrigin;
+});
+
+function handleSave(e) {
+  e.preventDefault();
+  
+  const name = document.getElementById('fullName').value.trim();
+  const dob = document.getElementById('dob').value;
+  const origin = document.getElementById('origin').value.trim();
+
+  // Save to localStorage
+  localStorage.setItem('space_name', name);
+  localStorage.setItem('space_dob', dob);
+  localStorage.setItem('space_origin', origin);
+  
+  // Update UI Elements
+  if(name) { updateAvatar(name); }
+  
+  const btn = document.getElementById('saveBtn');
+  const msg = document.getElementById('successMsg');
+  
+  btn.textContent = 'Saving...';
+  btn.style.opacity = '0.7';
+  
+  setTimeout(() => {
+    btn.textContent = 'Update Profile';
+    btn.style.opacity = '1';
+    msg.style.display = 'block';
+    
+    setTimeout(() => {
+      msg.style.display = 'none';
+    }, 3000);
+  }, 600);
+}
+
+function updateAvatar(name) {
+  document.getElementById('displayName').textContent = name;
+  document.getElementById('avatarLetter').textContent = name.charAt(0).toUpperCase();
+}
+</script>
+
+</body>
+</html>

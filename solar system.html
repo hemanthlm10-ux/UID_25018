@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solar System</title>
+
+<link rel="stylesheet" href="stylesheet.css">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  .hero-text h1 {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    letter-spacing: 0.12em;
+    text-shadow: 0 0 60px rgba(150,200,255,0.45), 0 0 120px rgba(80,140,255,0.2);
+  }
+  .explore-btn {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    font-size: 14px;
+  }
+</style>
+
+</head>
+
+<body>
+
+<video autoplay muted loop id="bg-video">
+<source src="background.mp4" type="video/mp4">
+</video>
+
+<div class="overlay"></div>
+
+<div class="hero-text">
+
+<h1>
+  SOLAR <br>
+  SYSTEM
+</h1>
+
+<button class="explore-btn" onclick="window.location.href='login.html'">
+  Explore
+</button>
+
+</div>
+
+</body>
+</html>
