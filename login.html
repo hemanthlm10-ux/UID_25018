@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Solar System</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Exo+2:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    height: 100vh;
+    overflow: hidden;
+    background: black;
+    font-family: 'Exo 2', sans-serif;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── VIDEO BG ── */
+  #bg-video {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    z-index: -2;
+  }
+
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 10, 0.6);
+    z-index: -1;
+  }
+
+  /* ── STARS CANVAS ── */
+  #stars {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── LAYOUT ── */
+  .login-wrapper {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    padding: 20px;
+  }
+
+  /* ── LOGO / BRAND ── */
+  .brand {
+    text-align: center;
+  }
+
+  .brand-tag {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.45em;
+    color: rgba(255,255,255,0.25);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .brand-name {
+    font-family: 'Orbitron', monospace;
+    font-weight: 900;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    letter-spacing: 0.25em;
+    color: #ffffff;
+    text-shadow: 0 0 40px rgba(150,200,255,0.5), 0 0 80px rgba(80,140,255,0.2);
+    line-height: 1;
+  }
+
+  .brand-sub {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.52rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.18);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+
+  /* ── CARD ── */
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 24px;
+    padding: 44px 40px 40px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.05) inset,
+      0 30px 80px rgba(0,0,0,0.6),
+      0 0 60px rgba(66,133,244,0.06);
+    animation: cardIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .card-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.4em;
+    color: rgba(255,255,255,0.22);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title::before {
+    content: '';
+    display: block;
+    width: 22px;
+    height: 1px;
+    background: rgba(255,255,255,0.2);
+  }
+
+  /* ── FORM ── */
+  .form-group {
+    margin-bottom: 18px;
+  }
+
+  .form-label {
+    display: block;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.3em;
+    color: rgba(255,255,255,0.3);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 13px 18px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+  }
+
+  .form-input::placeholder {
+    color: rgba(255,255,255,0.15);
+  }
+
+  .form-input:focus {
+    border-color: rgba(100,180,255,0.5);
+    background: rgba(100,180,255,0.05);
+    box-shadow: 0 0 0 3px rgba(100,180,255,0.08);
+  }
+
+  /* ── EMAIL HINT ── */
+  .email-hint {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.68rem;
+    margin-top: 6px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: none;
+    transition: all 0.25s;
+  }
+  .email-hint.valid {
+    color: #4ade80;
+    background: rgba(74,222,128,0.06);
+    border: 1px solid rgba(74,222,128,0.2);
+  }
+  .email-hint.invalid {
+    color: rgba(255,110,110,0.9);
+    background: rgba(255,80,80,0.06);
+    border: 1px solid rgba(255,80,80,0.2);
+  }
+
+  /* ── VALIDATION ── */
+  .password-criteria {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 0.70rem;
+    margin-top: 10px;
+    display: none;
+    background: rgba(0,0,0,0.2);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .password-criteria ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .password-criteria li {
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.3s;
+    color: rgba(255,255,255,0.4);
+  }
+
+  .password-criteria li.valid {
+    color: #4ade80;
+  }
+
+  .password-criteria li.invalid {
+    color: rgba(255,90,90,0.9);
+  }
+
+  /* ── OPTIONS ROW ── */
+  .options-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    margin-top: 4px;
+  }
+
+  .remember-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.1em;
+    font-size: 0.48rem;
+    text-transform: uppercase;
+  }
+
+  .remember-label input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.04);
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .remember-label input[type="checkbox"]:checked {
+    background: rgba(100,180,255,0.25);
+    border-color: rgba(100,180,255,0.6);
+  }
+
+  .remember-label input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    color: #96d4ff;
+  }
+
+  .forgot-link {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.15em;
+    color: rgba(100,180,255,0.5);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .forgot-link:hover { color: rgba(100,180,255,0.9); }
+
+  /* ── SUBMIT BUTTON ── */
+  .login-btn {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e5acc 0%, #3b8beb 50%, #1e5acc 100%);
+    background-size: 200% 100%;
+    background-position: 0% 0%;
+    color: #fff;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-position 0.4s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 8px 30px rgba(30,90,220,0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
+  }
+
+  .login-btn:hover {
+    background-position: 100% 0%;
+    box-shadow: 0 12px 40px rgba(59,139,235,0.6), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    transform: translateY(-1px);
+  }
+
+  .login-btn:active {
+    transform: translateY(0);
+  }
+
+  /* ── ERROR MESSAGE ── */
+  .error-msg {
+    display: none;
+    margin-top: 14px;
+    padding: 10px 16px;
+    background: rgba(255,60,60,0.08);
+    border: 1px solid rgba(255,80,80,0.25);
+    border-radius: 8px;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.15em;
+    color: rgba(255,120,120,0.85);
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  /* ── DIVIDER ── */
+  .card-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 26px 0;
+  }
+  .card-divider-line {
+    flex: 1;
+    height: 1px;
+    background: rgba(255,255,255,0.07);
+  }
+  .card-divider-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.42rem;
+    letter-spacing: 0.25em;
+    color: rgba(255,255,255,0.12);
+    text-transform: uppercase;
+  }
+
+  /* ── BACK LINK ── */
+  .back-link {
+    text-align: center;
+  }
+  .back-link a {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.48rem;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.2);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .back-link a:hover { color: rgba(255,255,255,0.5); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 480px) {
+    .login-card { padding: 36px 24px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Video Background -->
+<video autoplay muted loop id="bg-video">
+  <source src="background.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<!-- Star canvas -->
+<canvas id="stars"></canvas>
+
+<div class="login-wrapper">
+
+  <!-- Brand -->
+  <div class="brand">
+    <p class="brand-tag">Milky Way · Orion Arm</p>
+    <div class="brand-name">SOLAR SYSTEM</div>
+    <p class="brand-sub">Mission Access Portal</p>
+  </div>
+
+  <!-- Card -->
+  <div class="login-card">
+    <p class="card-title" id="formTitle">// Crew Authentication</p>
+
+    <form id="authForm" onsubmit="handleAuth(event)">
+
+      <div class="form-group">
+        <label class="form-label" for="username">Commander ID</label>
+        <input class="form-input" type="text" id="username" placeholder="Enter commander name (alphabets only)" autocomplete="username" required>
+        <div class="email-hint" id="usernameHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="email">Mission Email</label>
+        <input class="form-input" type="text" id="email" placeholder="commander@galaxy.com" autocomplete="email" required>
+        <div class="email-hint" id="emailHint"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="password">Access Code</label>
+        <input class="form-input" type="password" id="password" placeholder="Enter your password" autocomplete="current-password" required>
+        <div class="password-criteria" id="passwordCriteria">
+          <ul>
+            <li id="rule-capital" class="invalid"><span>○</span> Requires a capital letter</li>
+            <li id="rule-number" class="invalid"><span>○</span> Requires a number</li>
+            <li id="rule-special" class="invalid"><span>○</span> Requires a special character</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="options-row" id="optionsRow">
+        <label class="remember-label">
+          <input type="checkbox" id="remember">
+          Remember mission
+        </label>
+        <a href="#" class="forgot-link">Forgot code?</a>
+      </div>
+
+      <button type="submit" class="login-btn" id="submitBtn">Launch Mission</button>
+      <button type="button" class="login-btn" id="toggleModeBtn" style="margin-top: 12px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); box-shadow: none; color: rgba(255,255,255,0.7);" onmouseover="this.style.color='#fff'; this.style.borderColor='rgba(255,255,255,0.3)';" onmouseout="this.style.color='rgba(255,255,255,0.7)'; this.style.borderColor='rgba(255,255,255,0.1)';" onclick="toggleMode()">Create Account</button>
+
+      <div class="error-msg" id="errorMsg">
+        ⚠ &nbsp; Invalid credentials — access denied
+      </div>
+
+    </form>
+
+    <div class="card-divider">
+      <div class="card-divider-line"></div>
+      <span class="card-divider-text">OR</span>
+      <div class="card-divider-line"></div>
+    </div>
+
+    <div class="back-link">
+      <a href="solar system.html">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <path d="M10 3L5 8L10 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        Return to launch site
+      </a>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+/* ── STARS ── */
+const cvs = document.getElementById('stars');
+const ctx = cvs.getContext('2d');
+let W, H, stars = [];
+
+function initStars() {
+  W = cvs.width = innerWidth;
+  H = cvs.height = innerHeight;
+  stars = Array.from({ length: 220 }, () => ({
+    x: Math.random() * W,
+    y: Math.random() * H,
+    r: Math.random() * 1.2 + 0.2,
+    a: Math.random(),
+    da: (Math.random() - 0.5) * 0.003,
+    twinkle: Math.random() > 0.55
+  }));
+}
+
+function drawStars() {
+  ctx.clearRect(0, 0, W, H);
+  stars.forEach(s => {
+    if (s.twinkle) {
+      s.a = Math.max(0.1, Math.min(1, s.a + s.da));
+      if (s.a <= 0.1 || s.a >= 1) s.da *= -1;
+    }
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,255,255,${s.a * 0.7})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+
+initStars();
+drawStars();
+window.addEventListener('resize', initStars);
+
+/* ── AUTH LOGIC ── */
+let isLoginMode = true;
+
+function toggleMode() {
+  isLoginMode = !isLoginMode;
+  const formTitle = document.getElementById('formTitle');
+  const submitBtn = document.getElementById('submitBtn');
+  const toggleBtn = document.getElementById('toggleModeBtn');
+  const optionsRow = document.getElementById('optionsRow');
+  const errorEl = document.getElementById('errorMsg');
+
+  if (isLoginMode) {
+    formTitle.textContent = '// Crew Authentication';
+    submitBtn.textContent = 'Launch Mission';
+    toggleBtn.textContent = 'Create Account';
+    optionsRow.style.display = 'flex';
+    errorEl.style.display = 'none';
+  } else {
+    formTitle.textContent = '// Enlist New Commander';
+    submitBtn.textContent = 'Register Credentials';
+    toggleBtn.textContent = 'Back to Login';
+    optionsRow.style.display = 'none';
+    
+    // Thematic welcome message
+    errorEl.style.display = 'block';
+    errorEl.style.color = 'rgba(150, 210, 255, 0.9)';
+    errorEl.style.background = 'rgba(100, 180, 255, 0.08)';
+    errorEl.style.borderColor = 'rgba(100, 180, 255, 0.3)';
+    errorEl.textContent = '✦ New recruit detected! Awaiting credentials to enlist...';
+  }
+}
+
+function handleAuth(e) {
+  e.preventDefault();
+  
+  const user = document.getElementById('username').value.trim();
+  const pass = document.getElementById('password').value;
+  const errorEl = document.getElementById('errorMsg');
+  const btn = document.getElementById('submitBtn');
+
+  const showError = (msg) => {
+    errorEl.style.color = '';
+    errorEl.style.background = '';
+    errorEl.style.borderColor = '';
+    errorEl.style.display = 'block';
+    errorEl.textContent = msg;
+  };
+
+  if (!user || !pass) {
+    return showError('⚠  Valid credentials required');
+  }
+
+  if (!/^[A-Za-z\s]+$/.test(user)) {
+    return showError('⚠ Commander ID must contain only alphabets.');
+  }
+
+  const email = document.getElementById('email').value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email) {
+    return showError('⚠ Mission Email is required.');
+  }
+  if (!emailRegex.test(email)) {
+    return showError('⚠ Invalid email — use format: name@domain.com');
+  }
+
+  if (!/[A-Z]/.test(pass) || !/\d/.test(pass) || !/[^A-Za-z0-9]/.test(pass)) {
+    return showError('⚠ Access Code does not meet security criteria.');
+  }
+
+  // Reset error styles
+  errorEl.style.color = '';
+  errorEl.style.background = '';
+  errorEl.style.borderColor = '';
+  errorEl.style.display = 'none';
+
+  btn.textContent = isLoginMode ? 'Authenticating...' : 'Registering...';
+  btn.disabled = true;
+
+  // Simulate network delay for mock authentication
+  setTimeout(() => {
+    btn.textContent = isLoginMode ? 'Access Granted. Launching...' : 'Registered. Launching...';
+    setTimeout(() => {
+      window.location.href = 'main.html';
+    }, 800);
+  }, 600);
+}
+
+// Validation Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+  const usernameInput = document.getElementById('username');
+  const usernameHint  = document.getElementById('usernameHint');
+
+  usernameInput.addEventListener('input', function() {
+    const val = this.value;
+    if (!val) {
+      usernameHint.style.display = 'none';
+      return;
+    }
+    usernameHint.style.display = 'block';
+    if (/^[A-Za-z\s]+$/.test(val)) {
+      usernameHint.className = 'email-hint valid';
+      usernameHint.textContent = '✔  Valid commander name';
+    } else {
+      usernameHint.className = 'email-hint invalid';
+      usernameHint.textContent = '✘  Numbers & special characters are not allowed';
+    }
+  });
+
+  const emailInput  = document.getElementById('email');
+  const emailHint   = document.getElementById('emailHint');
+  const emailRegex  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  emailInput.addEventListener('input', function() {
+    const val = this.value.trim();
+    if (!val) {
+      emailHint.style.display = 'none';
+      return;
+    }
+    emailHint.style.display = 'block';
+    if (emailRegex.test(val)) {
+      emailHint.className = 'email-hint valid';
+      emailHint.textContent = '✔  Valid email address';
+    } else {
+      emailHint.className = 'email-hint invalid';
+      emailHint.textContent = '✘  Invalid format — use name@domain.com';
+    }
+  });
+
+
+  const passwordInput = document.getElementById('password');
+  const passCriteria = document.getElementById('passwordCriteria');
+  const rCap = document.getElementById('rule-capital');
+  const rNum = document.getElementById('rule-number');
+  const rSpec = document.getElementById('rule-special');
+
+  passwordInput.addEventListener('focus', () => {
+      passCriteria.style.display = 'block';
+  });
+
+  passwordInput.addEventListener('blur', () => {
+      if (passwordInput.value === '') {
+          passCriteria.style.display = 'none';
+      }
+  });
+
+  passwordInput.addEventListener('input', function() {
+      const val = this.value;
+      
+      const updateRule = (el, isValid) => {
+          if (isValid) {
+              el.classList.remove('invalid');
+              el.classList.add('valid');
+              el.children[0].textContent = '✔';
+          } else {
+              el.classList.remove('valid');
+              el.classList.add('invalid');
+              el.children[0].textContent = '○';
+          }
+      };
+
+      updateRule(rCap, /[A-Z]/.test(val));
+      updateRule(rNum, /\d/.test(val));
+      updateRule(rSpec, /[^A-Za-z0-9]/.test(val));
+  });
+});
+</script>
+
+</body>
+</html>
